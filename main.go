@@ -14,5 +14,6 @@ func main() {
 
 	c := config.NewConfig(*pathFlag)
 
-	app.NewApp(c)
+	a := app.NewApp(c)
+	a.Start()
 }

@@ -15,7 +15,7 @@ type Server struct {
 	ip   string
 }
 
-func NewServer(service *service.Service, port string) *Server {
+func NewNetwork(service *service.Service, port string) *Server {
 	s := &Server{
 		engin:   gin.New(),
 		service: service,
@@ -35,4 +35,8 @@ func NewServer(service *service.Service, port string) *Server {
 	//registerServer(s)
 
 	return s
+}
+
+func (s *Server) Start() error {
+	return s.engin.Run(s.port)
 }
