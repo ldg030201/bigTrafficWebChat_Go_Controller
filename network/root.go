@@ -11,16 +11,14 @@ type Server struct {
 
 	service *service.Service
 
-	port          string
-	avgServerList map[string]bool
+	port string
 }
 
 func NewNetwork(service *service.Service, port string) *Server {
 	s := &Server{
-		engin:         gin.New(),
-		service:       service,
-		port:          port,
-		avgServerList: make(map[string]bool),
+		engin:   gin.New(),
+		service: service,
+		port:    port,
 	}
 
 	s.engin.Use(gin.Logger())
@@ -33,21 +31,11 @@ func NewNetwork(service *service.Service, port string) *Server {
 		AllowCredentials: true,
 	}))
 
-	s.setServerInfo()
+	registerTowerAPI(s)
 
 	return s
 }
 
 func (s *Server) Start() error {
 	return s.engin.Run(s.port)
-}
-
-func (s *Server) setServerInfo() {
-	if serverList, err := s.service.GetAvailableServerList(); err != nil {
-		panic(err.Error())
-	} else {
-		for _, server := range serverList {
-			s.avgServerList[server.IP] = true
-		}
-	}
 }
