@@ -16,5 +16,5 @@ func registerTowerAPI(server *Server) {
 }
 
 func (t *Tower) serverList(c *gin.Context) {
-	response(c, http.StatusOK, t.server.service.AvgServerList)
+	response(c, http.StatusOK, t.server.service.GetAvgServerList())
 }
