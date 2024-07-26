@@ -3,6 +3,9 @@ package service
 import (
 	"chat_controller_server/repository"
 	"chat_controller_server/types/table"
+	"fmt"
+	. "github.com/confluentinc/confluent-kafka-go/kafka"
+	"log"
 )
 
 type Service struct {
@@ -18,6 +21,12 @@ func NewService(repository *repository.Repository) *Service {
 	}
 
 	s.setServerInfo()
+
+	if err := s.repository.Kafka.RegisterSubTopic("chat"); err != nil {
+		panic(err)
+	} else {
+		go s.loopSubKafka()
+	}
 
 	return s
 }
@@ -44,6 +53,21 @@ func (s *Service) setServerInfo() {
 	} else {
 		for _, server := range serverList {
 			s.AvgServerList[server.IP] = true
+		}
+	}
+}
+
+func (s *Service) loopSubKafka() {
+	for {
+		ev := s.repository.Kafka.Pool(100)
+
+		switch event := ev.(type) {
+		case *Message:
+			fmt.Println(event)
+
+		case *Error:
+			log.Println("Pooling Event Error")
+
 		}
 	}
 }
