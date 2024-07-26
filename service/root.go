@@ -3,6 +3,7 @@ package service
 import (
 	"chat_controller_server/repository"
 	"chat_controller_server/types/table"
+	"encoding/json"
 	"fmt"
 	. "github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
@@ -63,6 +64,20 @@ func (s *Service) loopSubKafka() {
 
 		switch event := ev.(type) {
 		case *Message:
+			type ServerInfoEvent struct {
+				IP     string
+				Status bool
+			}
+
+			var decoder ServerInfoEvent
+
+			if err := json.Unmarshal(event.Value, &decoder); err != nil {
+				log.Println("decode event error")
+			} else {
+				fmt.Println(decoder)
+				s.AvgServerList[decoder.IP] = decoder.Status
+			}
+
 			fmt.Println(event)
 
 		case *Error:
